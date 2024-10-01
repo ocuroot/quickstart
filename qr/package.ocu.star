@@ -11,9 +11,9 @@ def build(build, repo, docker):
 def deploy(deploy, build, repo, docker, environment, schedule):
     # Read the message as provided from the message package
     message = deploy.inputs["message"]
-    message.replace("$ENVIRONMENT", environment.name)
+    message = message.replace("$ENVIRONMENT", environment.name)
 
-    run = docker.pull("scratch").container()
+    run = docker.pull("alpine").container()
     run.exec("{} ../.ocuroot/deployments/{}/qr.png \"{}\"".format(build.attributes["binary_path"], environment.name, message))
 
     # Mark this build as staged to allow production deployment
