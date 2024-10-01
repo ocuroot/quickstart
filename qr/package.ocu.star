@@ -1,5 +1,6 @@
 load("//go.star", "setup_go")
 
+# build creates a new build of this package
 def build(build, repo, docker):
     # Build the binary
     go = setup_go(docker, "golang:1.23.1-bullseye")
@@ -8,7 +9,8 @@ def build(build, repo, docker):
 
     build.attributes["binary_path"] = binary_path
 
-def deploy(deploy, build, repo, docker, environment, schedule):
+# deploy deploys a build in a given environment
+def deploy(deploy, build, repo, docker, environment):
     # Read the message as provided from the message package
     message = deploy.inputs["message"]
     message = message.replace("$ENVIRONMENT", environment.name)
@@ -20,6 +22,7 @@ def deploy(deploy, build, repo, docker, environment, schedule):
     if environment.attributes.get("type") == "staging":
         build.annotations["staged"] = "true"
 
+# policy defines the rules for deploying a build to a given environment
 def policy(policy, build, environment):
     # Prevent deploying to production if not already staged
     if environment.attributes.get("type") == "prod" and build.annotations.get("staged") != "true":
@@ -29,6 +32,7 @@ def policy(policy, build, environment):
         message=policy.input_dependency(package="message", output="message"),
     )
 
+# Register the QR package
 package(
   name="qr",
   build=build,
