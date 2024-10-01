@@ -1,5 +1,5 @@
 def setup_go(docker, image):
-    go = docker.pull("golang:1.22.5-bullseye").container()
+    go = docker.pull(image).container()
     go = go.cache("go", "/go/cache")
     go = go.cache("gopath", "/go/path")
     go = go.env(
