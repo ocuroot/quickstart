@@ -7,7 +7,7 @@ def build(build, repo):
 # deploy deploys a build in a given environment
 def deploy(deploy, build, repo, docker, environment, schedule):
     # Write the message as an output for use in downstream packages
-    deploy.outputs["message"] = build.attributes["message"]
+    deploy.outputs["message"] = build.attributes["message"].replace("$ENVIRONMENT", environment.name)
 
     # Mark this build as staged to allow production deployment
     if environment.attributes.get("type") == "staging":
@@ -19,6 +19,7 @@ def policy(policy, build, environment):
     if environment.attributes.get("type") == "prod" and build.annotations.get("staged") != "true":
         return policy.later()
 
+    # No inputs required
     return policy.ready()
 
 # Register the message package

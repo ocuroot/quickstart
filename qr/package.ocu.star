@@ -13,7 +13,6 @@ def build(build, repo, docker):
 def deploy(deploy, build, repo, docker, environment):
     # Read the message as provided from the message package
     message = deploy.inputs["message"]
-    message = message.replace("$ENVIRONMENT", environment.name)
 
     run = docker.pull("alpine").container()
     run.exec("{} ../.ocuroot/deployments/{}/qr.png \"{}\"".format(build.attributes["binary_path"], environment.name, message))
@@ -29,7 +28,9 @@ def policy(policy, build, environment):
         return policy.later()
 
     return policy.ready(
-        message=policy.input_dependency(package="message", output="message"),
+        inputs={
+            "message": policy.input_dependency(package="message", output="message"),
+        },
     )
 
 # Register the QR package
