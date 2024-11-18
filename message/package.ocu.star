@@ -13,6 +13,9 @@ def deploy(deploy, build, repo, docker, environment, schedule):
     if environment.attributes.get("type") == "staging":
         build.annotations["staged"] = "true"
 
+def destroy(deploy, build, repo, docker, environment):
+    print("destroy - TODO")
+
 # policy defines the rules for deploying a build to a given environment
 def policy(policy, build, environment):
     # Prevent deploying to production if not already staged
@@ -28,4 +31,7 @@ package(
   build=build,
   policy=policy,
   deploy=deploy,
+  destroy=destroy
 )
+
+# Entropy: 1
