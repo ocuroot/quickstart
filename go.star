@@ -10,7 +10,7 @@ def setup_go():
     go_cache_dir = repo_path + "/../.ocuroot/cache/go/cache"
     go_path_dir = repo_path + "/../.ocuroot/cache/go/path"
 
-    def build_func(target, output, os="linux", arch="amd64", ldflags=""):
+    def build_func(target, output, ldflags=""):
 
         host.shell("""
             go build \
@@ -21,8 +21,6 @@ def setup_go():
             env={
                 "FILE": output,
                 "LDFLAGS": ldflags,
-                "GOOS": os,
-                "GOARCH": arch,
                 "GOFLAGS": "-buildvcs=false",
                 "GOCACHE": go_cache_dir,
                 "GOPATH": go_path_dir,

@@ -18,6 +18,8 @@ def deploy(deploy, build, environment):
     # Read the message as provided from the message package
     message = deploy.inputs["message"]
 
+    host.shell("pwd")
+    host.shell("ls -la {}".format(build.attributes["binary_path"]))
     host.shell("{} ../.ocuroot/deployments/{}/qr.png \"{}\"".format(build.attributes["binary_path"], environment.name, message))
 
     # Mark this build as staged to allow production deployment
@@ -48,4 +50,4 @@ package(
   destroy=destroy,
 )
 
-# Entropy: 2
+# Entropy: 3
