@@ -5,34 +5,34 @@ load("github.com/ocuroot/sdk/v0/policy.star", "ready", "later", "dependency")
 load("//go.star", "setup_go")
 
 # build creates a new build of this package
-def build(build):
+def build(ctx):
     # Build the binary
     go = setup_go()
-    binary_path = "../.ocuroot/build/qr/{}/qr".format(build.sequence)
+    binary_path = "../.ocuroot/build/qr/{}/qr".format(ctx.build.sequence)
     go.build(".", binary_path)
 
-    build.attributes["binary_path"] = binary_path
+    ctx.build.attributes["binary_path"] = binary_path
 
 # deploy deploys a build in a given environment
-def deploy(deploy, build, environment):
+def deploy(ctx):
     # Read the message as provided from the message package
-    message = deploy.inputs["message"]
+    message = ctx.deploy.inputs["message"]
 
     host.shell("pwd")
-    host.shell("ls -la {}".format(build.attributes["binary_path"]))
-    host.shell("{} ../.ocuroot/deployments/{}/qr.png \"{}\"".format(build.attributes["binary_path"], environment.name, message))
+    host.shell("ls -la {}".format(ctx.build.attributes["binary_path"]))
+    host.shell("{} ../.ocuroot/deployments/{}/qr.png \"{}\"".format(ctx.build.attributes["binary_path"], ctx.environment.name, message))
 
     # Mark this build as staged to allow production deployment
-    if environment.attributes.get("type") == "staging":
-        build.annotations["staged"] = "true"
+    if ctx.environment.attributes.get("type") == "staging":
+        ctx.build.annotations["staged"] = "true"
 
-def destroy(deploy, build, environment):
+def destroy(ctx):
     print("destroy - TODO")
 
 # policy defines the rules for deploying a build to a given environment
-def policy(build, environment):
+def policy(ctx):
     # Prevent deploying to production if not already staged
-    if environment.attributes.get("type") == "prod" and build.annotations.get("staged") != "true":
+    if ctx.environment.attributes.get("type") == "prod" and ctx.build.annotations.get("staged") != "true":
         return later()
 
     return ready(
