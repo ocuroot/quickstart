@@ -17,9 +17,6 @@ def deploy(ctx):
     if ctx.environment.attributes.get("type") == "staging":
         ctx.build.annotations["staged"] = "true"
 
-def destroy(ctx):
-    print("destroy - TODO")
-
 # policy defines the rules for deploying a build to a given environment
 def policy(ctx):
     # Prevent deploying to production if not already staged
@@ -35,7 +32,6 @@ package(
   build=build,
   policy=policy,
   deploy=deploy,
-  destroy=destroy
 )
 
 # Entropy: 5

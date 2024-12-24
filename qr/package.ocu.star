@@ -18,16 +18,11 @@ def deploy(ctx):
     # Read the message as provided from the message package
     message = ctx.deploy.inputs["message"]
 
-    host.shell("pwd")
-    host.shell("ls -la {}".format(ctx.build.attributes["binary_path"]))
     host.shell("{} ../.ocuroot/deployments/{}/qr.png \"{}\"".format(ctx.build.attributes["binary_path"], ctx.environment.name, message))
 
     # Mark this build as staged to allow production deployment
     if ctx.environment.attributes.get("type") == "staging":
         ctx.build.annotations["staged"] = "true"
-
-def destroy(ctx):
-    print("destroy - TODO")
 
 # policy defines the rules for deploying a build to a given environment
 def policy(ctx):
@@ -47,7 +42,6 @@ package(
   build=build,
   policy=policy,
   deploy=deploy,
-  destroy=destroy,
 )
 
 # Entropy: 5
