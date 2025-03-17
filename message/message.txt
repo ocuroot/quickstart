@@ -1,1 +1,1 @@
-Hello, once more from $ENVIRONMENT
+Hello, from $ENVIRONMENT
