@@ -1,0 +1,1 @@
+This message can be customized by editing message-service/message.txt and re-releasing message-service.

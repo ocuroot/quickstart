@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  app1:
+    build: ./app1
+    ports:
+      - "8080:8080"
+    environment:
+      - TIME_SERVICE_URL=http://time-service:8081
+      - WEATHER_SERVICE_URL=http://weather-service:8082
+      - MESSAGE_SERVICE_URL=http://message-service:8083
+    depends_on:
+      - time-service
+      - weather-service
+      - message-service
+    networks:
+      - quickstart-network
+
+  time-service:
+    build: ./time-service
+    ports:
+      - "8081:8081"
+    networks:
+      - quickstart-network
+
+  weather-service:
+    build: ./weather-service
+    ports:
+      - "8082:8082"
+    networks:
+      - quickstart-network
+
+  message-service:
+    build: ./message-service
+    ports:
+      - "8083:8083"
+    environment:
+      - WELCOME_MESSAGE=Welcome to the Ocuroot quickstart! This message is configurable via environment variables.
+      - STATUS_MESSAGE=All microservices are running smoothly in Docker containers.
+      - CUSTOM_MESSAGE=This custom message demonstrates how services can be configured at deployment time. Change this in docker-compose.yml!
+    networks:
+      - quickstart-network
+
+networks:
+  quickstart-network:
+    driver: bridge
