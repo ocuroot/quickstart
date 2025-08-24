@@ -7,9 +7,11 @@
 
 ## Prerequisites
 
-* Docker installed locally
+You will need the following installed on your local machine:
+
+* Docker
 * Git
-* Ocuroot client
+* Ocuroot client - see [the Ocuroot README](https://github.com/ocuroot/ocuroot?tab=readme-ov-file#installation)
 
 ## Instructions (work in progress)
 
