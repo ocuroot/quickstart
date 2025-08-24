@@ -13,6 +13,13 @@
 
 ## Instructions (work in progress)
 
+### 0. Clone the quickstart repository
+
+```bash
+git clone git@github.com:ocuroot/quickstart.git
+cd quickstart
+```
+
 ### 1. Create environments
 
 ```bash
@@ -47,13 +54,7 @@ Can now open the frontend at http://localhost:8080
 
 ```bash
 ocuroot release new time-service/package.ocu.star
-```
-
-```bash
 ocuroot release new weather-service/package.ocu.star
-```
-
-```bash
 ocuroot release new message-service/package.ocu.star
 ```
 
@@ -88,7 +89,10 @@ ocuroot work any
 
 The second run is needed to handle the dependency between `frontend` and `network`.
 
-# 7. Delete environments
+You can now see the production environment at http://localhost:8081, there should be a line on the page indicating
+that the environment is "production".
+
+### 7. Delete environments
 
 Run `docker ps -f name=^quickstart-` to see all the currently running containers.
 
