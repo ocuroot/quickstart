@@ -56,6 +56,8 @@ $ ocuroot state get @/environment/staging
 }
 ```
 
+For the purposes of this quickstart, state is stored locally in the `.store` directory.
+
 ### 2. Release the frontend
 
 Now we have an environment, we can release something to it. We'll start with the
@@ -68,9 +70,9 @@ ocuroot release new frontend/package.ocu.star
 This should output something like this:
 
 ```bash
-✓ build (934.371792ms)
+✓ build (30.399s)
   Outputs
-  └── quickstart/-/frontend/package.ocu.star/@9/call/build#output/image
+  └── quickstart/-/frontend/package.ocu.star/@1/call/build#output/image
       └── quickstart-frontend:latest
 › deploy to staging
   Pending Inputs
@@ -110,7 +112,7 @@ ocuroot release new message-service/package.ocu.star
 
 Once complete, reload the frontend and you'll see messages from these services.
 
-### 7. Add a production environment
+### 5. Add a production environment
 
 Now we have our staging environment fully populated and visually tested, we can
 set up production!
@@ -140,21 +142,26 @@ The second `ocuroot work any` call is needed to handle the dependency between `f
 Once this is complete, you'll be able to load the production frontend at http://localhost:8081, 
 there should be a line on the page indicating that the environment is "production".
 
-### 8. Delete environments
+### 6. Delete environments
 
 You'll now have a bunch of containers running in your local Docker.
-View the list by running `docker ps -f name=^quickstart-`. You'll see containers for both production
-and staging.
+View the list by running:
+
+```bash
+docker ps -f name=^quickstart- --format "{{.Names}}"
+```
+
+You'll see containers for both production and staging.
 
 Let's clean up after ourselves, first off, we'll delete our production environment. We'll do this
 by removing it from our intent, and executing work to synchronize to actual state.
 
 ```bash
-ocuroot state delete +/environments/production
+ocuroot state delete +/environment/production
 ocuroot work any
 ```
 
-If you run `docker ps -f name=^quickstart-` again, you'll only see the staging containers. 
+If you run the `docker ps` command above again, you'll only see the staging containers. 
 See if you can adapt the above commands to delete the staging environment as well.
 
 ## Next steps
