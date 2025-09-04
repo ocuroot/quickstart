@@ -26,7 +26,7 @@ You will need the following installed on your local machine:
 We'll be working on a local copy of this repo, so you'll need to clone it.
 
 ```bash
-git clone git@github.com:ocuroot/quickstart.git
+git clone https://github.com/ocuroot/quickstart.git
 cd quickstart
 ```
 
@@ -110,7 +110,7 @@ ocuroot release new weather-service/package.ocu.star
 ocuroot release new message-service/package.ocu.star
 ```
 
-Once complete, reload the frontend and you'll see messages from these services.
+Once complete, go back to the frontend and you'll see messages from these services.
 
 ### 5. Add a production environment
 
