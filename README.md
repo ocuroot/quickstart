@@ -157,7 +157,7 @@ Let's clean up after ourselves, first off, we'll delete our production environme
 by removing it from our intent, and executing work to synchronize to actual state.
 
 ```bash
-ocuroot state delete +/environment/production
+ocuroot state delete @/environment/production
 ocuroot work any
 ```
 

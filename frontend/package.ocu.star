@@ -5,7 +5,7 @@ ocuroot("0.3.0")
 ## Functions to implement the pipeline
 #########################################
 
-def build(ctx):
+def build():
     shell("docker build . -t quickstart-frontend:latest")
     return done(
         outputs={
@@ -13,8 +13,8 @@ def build(ctx):
         },
     )
 
-def up(ctx):
-    container_name = "quickstart-frontend-{}".format(ctx.inputs.environment["name"])
+def up(environment={}, network_name="", image=""):
+    container_name = "quickstart-frontend-{}".format(environment["name"])
     shell("docker stop {name} && docker rm {name}".format(name=container_name), continue_on_error=True)
     shell("""docker run -d \
     --name {name} \
@@ -26,15 +26,15 @@ def up(ctx):
     -e ENVIRONMENT={environment_name} \
     {image}""".format(
         name=container_name,
-        network=ctx.inputs.network_name,
-        port=ctx.inputs.environment["attributes"]["frontend_port"],
-        image=ctx.inputs.image,
-        environment_name=ctx.inputs.environment["name"],
+        network=network_name,
+        port=environment["attributes"]["frontend_port"],
+        image=image,
+        environment_name=environment["name"],
     ))
     return done()
 
-def down(ctx):
-    container_name = "quickstart-frontend-{}".format(ctx.inputs.environment["name"])
+def down(environment={}, network_name="", image=""):
+    container_name = "quickstart-frontend-{}".format(environment["name"])
     shell("docker stop {name} && docker rm {name}".format(name=container_name))
     return done()
 
@@ -43,20 +43,20 @@ def down(ctx):
 ## Defining the order of the pipeline
 #########################################
 
-call(
+task(
     name="build",
     fn=build
 )
 
 phase(
     name="staging",
-    work= [
+    tasks= [
         deploy(
             up=up,
             down=down,
             environment=e,
             inputs={
-                "image": ref("./call/build#output/image"),
+                "image": ref("./task/build#output/image"),
                 "network_name": ref("./-/network/package.ocu.star/@/deploy/{}#output/network_name".format(e.name)),
             }
         ) for e in environments() if e.attributes["type"] == "staging"
@@ -65,13 +65,13 @@ phase(
 
 phase(
     name="production",
-    work= [
+    tasks= [
         deploy(
             up=up,
             down=down,
             environment=e,
             inputs={
-                "image": ref("./call/build#output/image"),
+                "image": ref("./task/build#output/image"),
                 "network_name": ref("./-/network/package.ocu.star/@/deploy/{}#output/network_name".format(e.name)),
             }
         ) for e in environments() if e.attributes["type"] == "production"

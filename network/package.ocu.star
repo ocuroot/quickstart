@@ -8,23 +8,23 @@ ocuroot("0.3.0")
 #########################################
 
 # up creates a docker network with the same name as this environment
-def up(ctx):
+def up(environment={}):
     network_exists = shell(
-        "docker network ls | grep {}".format(ctx.inputs.environment["name"]), 
+        "docker network ls | grep {}".format(environment["name"]), 
         mute=True, 
         continue_on_error=True
     ).exit_code == 0
     if not network_exists:
-        shell("docker network create {}".format(ctx.inputs.environment["name"]))
+        shell("docker network create {}".format(environment["name"]))
     return done(
         outputs={
-            "network_name": ctx.inputs.environment["name"],
+            "network_name": environment["name"],
         },
     )
 
 # down removes the docker network for this environment
-def down(ctx):
-    shell("docker network rm {}".format(ctx.inputs.environment["name"]), continue_on_error=True)
+def down(environment={}):
+    shell("docker network rm {}".format(environment["name"]), continue_on_error=True)
     return done()
 
 #########################################
@@ -34,7 +34,7 @@ def down(ctx):
 
 phase(
     name="staging",
-    work= [
+    tasks= [
         deploy(
             up=up,
             down=down,
@@ -45,7 +45,7 @@ phase(
 
 phase(
     name="production",
-    work= [
+    tasks= [
         deploy(
             up=up,
             down=down,

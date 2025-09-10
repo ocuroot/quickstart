@@ -7,7 +7,7 @@ ocuroot("0.3.0")
 
 name = "quickstart-message-service"
 
-def build(ctx):
+def build():
     shell("docker build . -t {}:latest".format(name))
     return done(
         outputs={
@@ -15,18 +15,18 @@ def build(ctx):
         },
     )
 
-def up(ctx):
-    container_name = "{}-{}".format(name, ctx.inputs.environment["name"])
+def up(environment={}, network_name="", image=""):
+    container_name = "{}-{}".format(name, environment["name"])
     shell("docker stop {name} && docker rm {name}".format(name=container_name), continue_on_error=True)
     shell("docker run -d --name {name} --network {network} {image}".format(
         name=container_name,
-        network=ctx.inputs.network_name,
-        image=ctx.inputs.image,
+        network=network_name,
+        image=image,
     ))
     return done()
 
-def down(ctx):
-    container_name = "{}-{}".format(name, ctx.inputs.environment["name"])
+def down(environment={}, network_name="", image=""):
+    container_name = "{}-{}".format(name, environment["name"])
     shell("docker stop {name} && docker rm {name}".format(name=container_name))
     return done()
 
@@ -35,20 +35,20 @@ def down(ctx):
 ## Defining the order of the pipeline
 #########################################
 
-call(
+task(
     name="build",
     fn=build
 )
 
 phase(
     name="staging",
-    work= [
+    tasks= [
         deploy(
             up=up,
             down=down,
             environment=e,
             inputs={
-                "image": ref("./call/build#output/image"),
+                "image": ref("./task/build#output/image"),
                 "network_name": ref("./-/network/package.ocu.star/@/deploy/{}#output/network_name".format(e.name)),
             }
         ) for e in environments() if e.attributes["type"] == "staging"
@@ -57,13 +57,13 @@ phase(
 
 phase(
     name="production",
-    work= [
+    tasks= [
         deploy(
             up=up,
             down=down,
             environment=e,
             inputs={
-                "image": ref("./call/build#output/image"),
+                "image": ref("./task/build#output/image"),
                 "network_name": ref("./-/network/package.ocu.star/@/deploy/{}#output/network_name".format(e.name)),
             }
         ) for e in environments() if e.attributes["type"] == "production"
