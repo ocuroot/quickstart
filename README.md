@@ -2,7 +2,7 @@
 
 ## Overview
 
-This quickstart repo introduces to the open-source [Ocuroot client](https://github.com/ocuroot/ocuroot) by
+The quickstart repo introduces to the open-source [Ocuroot client](https://github.com/ocuroot/ocuroot) by
 building and deploying a set of interrelated services to a local Docker instance.
 
 Through deploying these services, you'll see how Ocuroot manages missing dependencies, adding and populating new
@@ -23,7 +23,7 @@ You will need the following installed on your local machine:
 
 ### 0. Clone the quickstart repository
 
-We'll be working on a local copy of this repo, so you'll need to clone it.
+We'll be working on a local copy of the quickstart repo, so you'll need to clone it.
 
 ```bash
 git clone https://github.com/ocuroot/quickstart.git
@@ -111,6 +111,18 @@ ocuroot release new message-service/package.ocu.star
 ```
 
 Once complete, go back to the frontend and you'll see messages from these services.
+
+### 4a. View state
+
+We now have a fully populated staging environment! Ocuroot also includes a web UI to view your
+state. You can start it by running:
+
+```bash
+ocuroot state view
+```
+
+This will start a local server showing the contents of your state store. Once started, open a browser to
+http://localhost:3000 and take a look around.
 
 ### 5. Add a production environment
 
@@ -226,6 +238,9 @@ ocuroot work any --comprehensive
 
 If you run the `docker ps` command above again, you'll only see the staging containers. 
 See if you can adapt the above commands to delete the staging environment as well.
+
+You can also look at the state with `ocuroot state view` and you will see that there are
+no environments listed, although there is a full record of all historical deployments.
 
 ## Next steps
 
