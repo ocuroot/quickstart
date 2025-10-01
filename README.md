@@ -87,15 +87,11 @@ because we need a shared docker network for the staging environment.
 To satisfy the dependency for the frontend, we need to release the network.
 
 ```bash
-ocuroot release new network/package.ocu.star
+ocuroot release new network/package.ocu.star --cascade
 ```
 
-Once this succeeds, the network name will be available and you can continue the frontend deployment.
-To continue any outstanding work, you can run the following command:
-
-```bash
-ocuroot work any
-```
+This will both create the network needed for the frontend, and then continue releasing the
+frontend now that it is unblocked. The latter behavior is enabled by the `--cascade` flag.
 
 The frontend should now be running and you can view it at http://localhost:8080. You'll see three
 errors about unreachable services, this is because we need to deploy them!
@@ -144,12 +140,11 @@ register_environment(environment(
 Then release these changes and deploy all services.
 
 ```bash
-ocuroot release new environments.ocu.star
-ocuroot work any --comprehensive
+ocuroot release new environments.ocu.star --cascade
 ```
 
-The use of the `--comprehensive` flag ensures that follow-on work created by dependencies is handled
-without having to run `ocuroot work any` more than once.
+This will create the new production environment, and deploy all your release to it in
+the correct order.
 
 Once this is complete, you'll be able to load the production frontend at http://localhost:8081, 
 there should be a line on the page indicating that the environment is "production".
@@ -172,11 +167,15 @@ First, let's delete the intent.
 ocuroot state delete @/environment/production
 ```
 
-Now we can run `ocuroot work any` to actually perform the deletion, but first, let's look at what it's about
+This will update your intent for the production environment, but won't actually perform any actions.
+In a typical deployment of Ocuroot, this change to intent will automatically trigger `ocuroot work cascade`
+on your CI platform.
+
+Now we can run `ocuroot work cascade` to actually perform the deletion, but first, let's look at what it's about
 to do with the `--dryrun` flag.
 
 ```bash
-ocuroot work any --dryrun
+ocuroot work cascade --dryrun
 ```
 
 This outputs something like:
@@ -190,50 +189,13 @@ This outputs something like:
 ]
 ```
 
-Which indicates that we're going to delete the realized state of the staging environment.
-Once we do this, it will schedule all the work necessary to clean up afterwards.
+Which indicates that we're going to delete the realized state of the staging environment, including
+all resources.
 
-So let's execute that deletion and then see what work is outstanding after.
-
-```bash
-ocuroot work any
-ocuroot work any --dryrun
-```
-
-```json
-[
-  {
-    "ref": "quickstart/-/frontend/package.ocu.star/@r1/deploy/staging/2",
-    "work_type": "run",
-    "commit": "a0c4e0047eff4405a624ac2dfbfa82ed8e90259e"
-  },
-  {
-    "ref": "quickstart/-/message-service/package.ocu.star/@r1/deploy/staging/2",
-    "work_type": "run",
-    "commit": "a0c4e0047eff4405a624ac2dfbfa82ed8e90259e"
-  },
-  {
-    "ref": "quickstart/-/network/package.ocu.star/@r1/deploy/staging/2",
-    "work_type": "run",
-    "commit": "a0c4e0047eff4405a624ac2dfbfa82ed8e90259e"
-  },
-  {
-    "ref": "quickstart/-/time-service/package.ocu.star/@r1/deploy/staging/2",
-    "work_type": "run",
-    "commit": "a0c4e0047eff4405a624ac2dfbfa82ed8e90259e"
-  },
-  {
-    "ref": "quickstart/-/weather-service/package.ocu.star/@r1/deploy/staging/2",
-    "work_type": "run",
-    "commit": "a0c4e0047eff4405a624ac2dfbfa82ed8e90259e"
-  }
-]
-```
-
-Now we have the work scheduled to run, let's execute it.
+So now we can execute all work required to remove this environment with a single command.
 
 ```bash
-ocuroot work any --comprehensive
+ocuroot work cascade
 ```
 
 If you run the `docker ps` command above again, you'll only see the staging containers. 
