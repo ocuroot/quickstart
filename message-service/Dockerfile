@@ -14,9 +14,8 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 RUN addgroup -g 1001 -S appgroup && \
     adduser -u 1001 -S appuser -G appgroup
-WORKDIR /root/
-COPY --from=builder /app/main .
-RUN chown appuser:appgroup main
+WORKDIR /app
+COPY --from=builder --chown=appuser:appgroup /app/main .
 USER appuser
 EXPOSE 8080
 CMD ["./main"]
